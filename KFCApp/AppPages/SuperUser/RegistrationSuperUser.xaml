@@ -1,0 +1,41 @@
+﻿<Page x:Class="KFCApp.AppPages.RegistrationSuperUser"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:KFCApp.AppPages"
+      mc:Ignorable="d" 
+      d:DesignHeight="400" d:DesignWidth="600"
+      Title="RegistrationSuperUser">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" TextAlignment="Center" Text="Регистрация администратора приложения"></TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <Label Content="Фамилия"></Label>
+            <TextBox Name="LastName"></TextBox>
+            <Label Content="Имя"></Label>
+            <TextBox Name="FirstName"></TextBox>
+            <Label Content="Отчество"></Label>
+            <TextBox Name="Patronymic"></TextBox>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="3">
+            <Label Content="Логин"></Label>
+            <TextBox Name="Login"></TextBox>
+            <Label Content="Пароль"></Label>
+            <PasswordBox Name="Password"></PasswordBox>
+            <Button Content="Зарегистрировать" Margin="0, 37, 0, 0" Click="RegistrationClick"></Button>
+        </StackPanel>
+    </Grid>
+</Page>
