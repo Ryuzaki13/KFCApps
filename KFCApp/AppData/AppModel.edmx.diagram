@@ -4,10 +4,17 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="b27d2c9701fc4c608fa5aecf55febdfd" Name="Diagram1" ZoomLevel="197">
-        <EntityTypeShape EntityType="AppData.Employees" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="AppData.Roles" Width="1.5" PointX="3.75" PointY="1.375" />
+      <Diagram DiagramId="b27d2c9701fc4c608fa5aecf55febdfd" Name="Diagram1" ZoomLevel="127">
+        <EntityTypeShape EntityType="AppData.Employees" Width="1.5" PointX="1.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AppData.Roles" Width="1.5" PointX="4.25" PointY="1.375" />
         <AssociationConnector Association="AppData.FK_Employees_Roles" />
+        <EntityTypeShape EntityType="AppData.Ingredient" Width="1.5" PointX="5.625" PointY="3.875" />
+        <EntityTypeShape EntityType="AppData.IngredientCategory" Width="1.5" PointX="3.375" PointY="4.25" />
+        <AssociationConnector Association="AppData.FK_Ingredient_IngredientCategory" />
+        <EntityTypeShape EntityType="AppData.Dish" Width="1.5" PointX="3.375" PointY="6.75" />
+        <EntityTypeShape EntityType="AppData.DishCategory" Width="1.5" PointX="1.125" PointY="7.25" />
+        <AssociationConnector Association="AppData.FK_Dish_DishCategory" />
+        <AssociationConnector Association="AppData.DishCompound" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

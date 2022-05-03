@@ -27,5 +27,9 @@ namespace KFCApp.AppData
     
         public virtual DbSet<Employees> Employees { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
+        public virtual DbSet<Ingredient> Ingredient { get; set; }
+        public virtual DbSet<IngredientCategory> IngredientCategory { get; set; }
+        public virtual DbSet<Dish> Dish { get; set; }
+        public virtual DbSet<DishCategory> DishCategory { get; set; }
     }
 }

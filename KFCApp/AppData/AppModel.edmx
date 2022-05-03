@@ -5,6 +5,30 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="Хранилище AppData" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Dish">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="Price" Type="money" Nullable="false" />
+          <Property Name="Category" Type="varchar" MaxLength="32" Nullable="false" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DishCategory">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="varchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DishCompound">
+          <Key>
+            <PropertyRef Name="DishID" />
+            <PropertyRef Name="IngredientName" />
+          </Key>
+          <Property Name="DishID" Type="bigint" Nullable="false" />
+          <Property Name="IngredientName" Type="varchar" MaxLength="200" Nullable="false" />
+        </EntityType>
         <EntityType Name="Employees">
           <Key>
             <PropertyRef Name="Phone" />
@@ -15,6 +39,22 @@
           <Property Name="FirstName" Type="varchar" MaxLength="30" Nullable="false" />
           <Property Name="LastName" Type="varchar" MaxLength="30" Nullable="false" />
           <Property Name="Patronymic" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="Calory" Type="int" Nullable="false" />
+          <Property Name="Category" Type="varchar" MaxLength="32" Nullable="false" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IngredientCategory">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="varchar" MaxLength="32" Nullable="false" />
         </EntityType>
         <EntityType Name="Roles">
           <Key>
@@ -22,6 +62,42 @@
           </Key>
           <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
+        <Association Name="FK_Dish_DishCategory">
+          <End Role="DishCategory" Type="Self.DishCategory" Multiplicity="1" />
+          <End Role="Dish" Type="Self.Dish" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DishCategory">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="Dish">
+              <PropertyRef Name="Category" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DishCompound_Dish">
+          <End Role="Dish" Type="Self.Dish" Multiplicity="1" />
+          <End Role="DishCompound" Type="Self.DishCompound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dish">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DishCompound">
+              <PropertyRef Name="DishID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DishCompound_Ingredient">
+          <End Role="Ingredient" Type="Self.Ingredient" Multiplicity="1" />
+          <End Role="DishCompound" Type="Self.DishCompound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredient">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="DishCompound">
+              <PropertyRef Name="IngredientName" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Employees_Roles">
           <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
           <End Role="Employees" Type="Self.Employees" Multiplicity="*" />
@@ -34,12 +110,45 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Ingredient_IngredientCategory">
+          <End Role="IngredientCategory" Type="Self.IngredientCategory" Multiplicity="1" />
+          <End Role="Ingredient" Type="Self.Ingredient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IngredientCategory">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="Ingredient">
+              <PropertyRef Name="Category" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Хранилище AppDataContainer">
+          <EntitySet Name="Dish" EntityType="Self.Dish" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DishCategory" EntityType="Self.DishCategory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DishCompound" EntityType="Self.DishCompound" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employees" EntityType="Self.Employees" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ingredient" EntityType="Self.Ingredient" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IngredientCategory" EntityType="Self.IngredientCategory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Dish_DishCategory" Association="Self.FK_Dish_DishCategory">
+            <End Role="DishCategory" EntitySet="DishCategory" />
+            <End Role="Dish" EntitySet="Dish" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DishCompound_Dish" Association="Self.FK_DishCompound_Dish">
+            <End Role="Dish" EntitySet="Dish" />
+            <End Role="DishCompound" EntitySet="DishCompound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DishCompound_Ingredient" Association="Self.FK_DishCompound_Ingredient">
+            <End Role="Ingredient" EntitySet="Ingredient" />
+            <End Role="DishCompound" EntitySet="DishCompound" />
+          </AssociationSet>
           <AssociationSet Name="FK_Employees_Roles" Association="Self.FK_Employees_Roles">
             <End Role="Roles" EntitySet="Roles" />
             <End Role="Employees" EntitySet="Employees" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ingredient_IngredientCategory" Association="Self.FK_Ingredient_IngredientCategory">
+            <End Role="IngredientCategory" EntitySet="IngredientCategory" />
+            <End Role="Ingredient" EntitySet="Ingredient" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -52,11 +161,12 @@
           </Key>
           <Property Name="Phone" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
           <Property Name="Password" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Role" Type="String" Nullable="false" />
+          <Property Name="Role" Type="String" Nullable="false" MaxLength="20" Unicode="false" FixedLength="false" />
           <Property Name="FirstName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="LastName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Patronymic" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Roles" Relationship="AppData.FK_Employees_Roles" FromRole="Employees" ToRole="Roles" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityContainer Name="AppConnector" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Employees" EntityType="Self.Employees" />
@@ -64,6 +174,22 @@
           <AssociationSet Name="FK_Employees_Roles" Association="AppData.FK_Employees_Roles">
             <End Role="Roles" EntitySet="Roles" />
             <End Role="Employees" EntitySet="Employees" />
+          </AssociationSet>
+          <EntitySet Name="Ingredient" EntityType="AppData.Ingredient" />
+          <EntitySet Name="IngredientCategory" EntityType="AppData.IngredientCategory" />
+          <AssociationSet Name="FK_Ingredient_IngredientCategory" Association="AppData.FK_Ingredient_IngredientCategory">
+            <End Role="IngredientCategory" EntitySet="IngredientCategory" />
+            <End Role="Ingredient" EntitySet="Ingredient" />
+          </AssociationSet>
+          <EntitySet Name="Dish" EntityType="AppData.Dish" />
+          <EntitySet Name="DishCategory" EntityType="AppData.DishCategory" />
+          <AssociationSet Name="FK_Dish_DishCategory" Association="AppData.FK_Dish_DishCategory">
+            <End Role="DishCategory" EntitySet="DishCategory" />
+            <End Role="Dish" EntitySet="Dish" />
+          </AssociationSet>
+          <AssociationSet Name="DishCompound" Association="AppData.DishCompound">
+            <End Role="Dish" EntitySet="Dish" />
+            <End Role="Ingredient" EntitySet="Ingredient" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Roles">
@@ -85,6 +211,71 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Calory" Type="Int32" Nullable="false" />
+          <Property Name="Category" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="IngredientCategory" Relationship="AppData.FK_Ingredient_IngredientCategory" FromRole="Ingredient" ToRole="IngredientCategory" />
+          <NavigationProperty Name="Dish" Relationship="AppData.DishCompound" FromRole="Ingredient" ToRole="Dish" />
+        </EntityType>
+        <EntityType Name="IngredientCategory">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Ingredient" Relationship="AppData.FK_Ingredient_IngredientCategory" FromRole="IngredientCategory" ToRole="Ingredient" />
+        </EntityType>
+        <Association Name="FK_Ingredient_IngredientCategory">
+          <End Type="AppData.IngredientCategory" Role="IngredientCategory" Multiplicity="1" />
+          <End Type="AppData.Ingredient" Role="Ingredient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IngredientCategory">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="Ingredient">
+              <PropertyRef Name="Category" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Dish">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="Category" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="DishCategory" Relationship="AppData.FK_Dish_DishCategory" FromRole="Dish" ToRole="DishCategory" />
+          <NavigationProperty Name="Ingredient" Relationship="AppData.DishCompound" FromRole="Dish" ToRole="Ingredient" />
+        </EntityType>
+        <EntityType Name="DishCategory">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Dish" Relationship="AppData.FK_Dish_DishCategory" FromRole="DishCategory" ToRole="Dish" />
+        </EntityType>
+        <Association Name="FK_Dish_DishCategory">
+          <End Type="AppData.DishCategory" Role="DishCategory" Multiplicity="1" />
+          <End Type="AppData.Dish" Role="Dish" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DishCategory">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="Dish">
+              <PropertyRef Name="Category" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DishCompound">
+          <End Type="AppData.Dish" Role="Dish" Multiplicity="*" />
+          <End Type="AppData.Ingredient" Role="Ingredient" Multiplicity="*" />
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -94,6 +285,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="AppData.Employees">
               <MappingFragment StoreEntitySet="Employees">
+                <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="Patronymic" ColumnName="Patronymic" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -110,6 +302,49 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Ingredient">
+            <EntityTypeMapping TypeName="AppData.Ingredient">
+              <MappingFragment StoreEntitySet="Ingredient">
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="Calory" ColumnName="Calory" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IngredientCategory">
+            <EntityTypeMapping TypeName="AppData.IngredientCategory">
+              <MappingFragment StoreEntitySet="IngredientCategory">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Dish">
+            <EntityTypeMapping TypeName="AppData.Dish">
+              <MappingFragment StoreEntitySet="Dish">
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DishCategory">
+            <EntityTypeMapping TypeName="AppData.DishCategory">
+              <MappingFragment StoreEntitySet="DishCategory">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="DishCompound" TypeName="AppData.DishCompound" StoreEntitySet="DishCompound">
+            <EndProperty Name="Ingredient">
+              <ScalarProperty Name="Name" ColumnName="IngredientName" />
+            </EndProperty>
+            <EndProperty Name="Dish">
+              <ScalarProperty Name="ID" ColumnName="DishID" />
+            </EndProperty>
+          </AssociationSetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

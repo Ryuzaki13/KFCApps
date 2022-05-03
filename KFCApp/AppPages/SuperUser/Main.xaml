@@ -4,19 +4,26 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:KFCApp.AppPages.SuperUser"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      TextElement.FontSize="16"
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="600"
       Title="Main">
 
     <Grid>
         <TabControl Background="Transparent" TabStripPlacement="Left">
-            <TabItem Header="Сотрудники" MouseLeftButtonDown="Activate" >
+            <TabItem Header="Сотрудники" MouseLeftButtonDown="Activate">
                 <Grid Name="EmployeeGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <ListBox SelectionChanged="EmployeeList_SelectionChanged" Background="Transparent" Name="EmployeeList" Margin="10,10,10,10">
+                    <ListBox
+                        ItemsSource="{Binding Employees}"
+                        SelectionChanged="EmployeeList_SelectionChanged"
+                        Background="Transparent"
+                        Name="EmployeeList"
+                        Margin="10,10,10,10">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock>
@@ -43,18 +50,125 @@
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock>
-                                        <Run Foreground="Black" Text="{Binding Name}"></Run>
+                                        <Run Text="{Binding Name}"></Run>
                                     </TextBlock>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button Name="ButtonEmployeeAction" Click="RegisterUser" Content="Зарегистрировать" Margin="0,10,0,0"></Button>
+                        <Button Name="ButtonEmployeeInsert" Click="RegisterUser" Content="Зарегистрировать" Margin="0,10,0,0"></Button>
+                        <Button Name="ButtonEmployeeUpdate" Click="UpdateUser" IsEnabled="False" Content="Обновить" Margin="0,10,0,0"></Button>
+                        <Button Name="ButtonEmployeeReset" Click="EmployeeReset" Content="Сбросить" Margin="0,10,0,0"></Button>
                     </StackPanel>
-                    
                 </Grid>
             </TabItem>
-            <TabItem Header="...">
-                <Grid />
+            <TabItem Header="Ингредиенты" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="279*"/>
+                        <ColumnDefinition Width="200*"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox 
+                        ItemsSource="{Binding Ingredients}"
+                        Name="IngredientList"
+                        Margin="10"
+                        SelectionChanged="IngredientList_SelectionChanged" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <Run Text="{Binding Name}"></Run>
+                                    <Run Text=" ("></Run>
+                                    <Run Text="{Binding Calory}"></Run>
+                                    <Run Text=" калл)"></Run>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Column="1">
+                        <TextBox Text="{Binding SelectedIngredient.Name}" Name="IngredientName" Margin="0,10,0,0"></TextBox>
+                        <TextBox Text="{Binding SelectedIngredient.Calory}" Name="IngredientCalory" Margin="0,10,0,0"></TextBox>
+                        <ComboBox 
+                            ItemsSource="{Binding IngredientCategories}"
+                            SelectedItem="{Binding SelectedIngredient.IngredientCategory}"
+                            Name="IngredientCategory"
+                            Margin="0,10,0,0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run Text="{Binding Name}"></Run>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <CheckBox Name="IngredientActive" Margin="0,10,0,0" Content="Активный?" IsChecked="{Binding SelectedIngredient.Active}"></CheckBox>
+                        <Button Name="ButtonIngredientInsert" Click="IngredientInsert" Content="Добавить" Margin="0,10,0,0"></Button>
+                        <Button Name="ButtonIngredientUpdate" Click="IngredientUpdate" Content="Обновить" IsEnabled="False" Margin="0,10,0,0"></Button>
+                        <Button Name="ButtonIngredientReset" Click="IngredientReset" Content="Сбросить" Margin="0,10,0,0"></Button>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Блюда" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Состав блюда"></Label>
+                    <Label Content="Ингредиенты" Grid.Column="1"></Label>
+                    <ListBox
+                        ItemsSource="{Binding IngredientsOfDish}"
+                        Margin="10"
+                        Name="IngredientsOfDishList"
+                        SelectionChanged="IngredientsOfDishList_SelectionChanged" Grid.Row="1">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <Run Text="{Binding Name}"></Run>
+                                    <Run Text=" ("></Run>
+                                    <Run Text="{Binding Calory}"></Run>
+                                    <Run Text=" калл)"></Run>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <ListBox 
+                        ItemsSource="{Binding Ingredients}"
+                        Grid.Column="1"
+                        Grid.Row="1"
+                        Grid.RowSpan="2"
+                        Margin="10"
+                        Name="DishIngredientList"
+                        SelectionChanged="DishIngredientList_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <Run Text="{Binding Name}"></Run>
+                                    <Run Text=" ("></Run>
+                                    <Run Text="{Binding Calory}"></Run>
+                                    <Run Text=" калл)"></Run>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Row="2" Margin="10">
+                        <TextBox Text=""></TextBox>
+                        <TextBox Text="" Margin="0,10,0,0"></TextBox>
+                        <CheckBox Content="Активен?" Margin="0,10,0,0"></CheckBox>
+                        <ComboBox Margin="0,10,0,0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run Text="{Binding Name}"></Run>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
             </TabItem>
 
         </TabControl>

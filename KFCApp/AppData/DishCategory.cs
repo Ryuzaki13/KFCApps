@@ -12,16 +12,17 @@ namespace KFCApp.AppData
     using System;
     using System.Collections.Generic;
     
-    public partial class Employees
+    public partial class DishCategory
     {
-        public string Phone { get; set; }
-        public string Password { get; set; }
-        public string Role { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Patronymic { get; set; }
-        public bool Active { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public DishCategory()
+        {
+            this.Dish = new HashSet<Dish>();
+        }
     
-        public virtual Roles Roles { get; set; }
+        public string Name { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Dish> Dish { get; set; }
     }
 }

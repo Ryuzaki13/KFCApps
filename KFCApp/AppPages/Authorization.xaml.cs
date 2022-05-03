@@ -20,6 +20,12 @@ namespace KFCApp.AppPages
 		public Authorization()
 		{
 			InitializeComponent();
+
+#if DEBUG
+			Phone.Text = "9634364862";
+			Password.Password = "123456";
+#endif
+
 		}
 
 		private void OnLogin(object sender, RoutedEventArgs e)
