@@ -37,6 +37,7 @@ namespace KFCApp.AppPages.SuperUser
 
         public List<AppData.Ingredient> Ingredients { get; set; }
         public List<AppData.IngredientCategory> IngredientCategories { get; set; }
+        public List<AppData.DishCategory> DishCategories { get; set; }
 
         public List<AppData.Ingredient> IngredientsOfDish { set; get; }
         private HashSet<AppData.Ingredient> IngredientsHashSet { set; get; }
@@ -52,7 +53,8 @@ namespace KFCApp.AppPages.SuperUser
             // Получить все роли из базы и
             // сохранить в переменной
             Roles = Connection.Roles.ToList();
-            IngredientCategories = Connection.IngredientCategory.ToList();
+
+            UpdateCategoryBinding();
 
             IngredientsHashSet = new HashSet<AppData.Ingredient>();
 
@@ -62,6 +64,16 @@ namespace KFCApp.AppPages.SuperUser
             Lib.Placeholder.SetElement(EmployeeFirstName, "EmployeeFirstName", "Имя");
             Lib.Placeholder.SetElement(EmployeeLastName, "EmployeeLastName", "Фамилия");
             Lib.Placeholder.SetElement(EmployeePatronymic, "EmployeePatronymic", "Отчество");
+
+            // CATEGORIES
+
+            Lib.Placeholder.SetElement(IngredientCategoryName, "IngredientCategoryName", "Имя категории");
+            Lib.Placeholder.SetElement(DishCategoryName, "DishCategoryName", "Имя категории");
+
+            // DISHES
+
+            Lib.Placeholder.SetElement(DishName, "DishName", "Название блюда");
+            Lib.Placeholder.SetElement(DishPrice, "DishPrice", "Цена");
 
             // Чтобы Binding работал, нужно это написать
             DataContext = this;
@@ -235,6 +247,72 @@ namespace KFCApp.AppPages.SuperUser
                 // Если сотрудник не был выбран
                 Reset();
             }
+        }
+
+        // CATEGORYIES
+
+        private void UpdateCategoryBinding()
+        {
+            IngredientCategories = Connection.IngredientCategory.OrderBy(i => i.Name).ToList();
+            DishCategories = Connection.DishCategory.OrderBy(i => i.Name).ToList();
+
+            DishCategoryBox.GetBindingExpression(ComboBox.ItemsSourceProperty)?.UpdateTarget();
+            DishCategoryList.GetBindingExpression(ListBox.ItemsSourceProperty)?.UpdateTarget();
+            IngredientCategoryList.GetBindingExpression(ListBox.ItemsSourceProperty)?.UpdateTarget();
+        }
+
+        private void AddIngredientCategory(object sender, RoutedEventArgs e)
+        {
+            string categoryName = IngredientCategoryName.Text.Trim();
+            if (categoryName.Length == 0)
+            {
+                MessageBox.Show("Необхождимо ввести название категории");
+                return;
+            }
+
+            var exists = Connection.IngredientCategory.Where(c => c.Name == categoryName).FirstOrDefault();
+            if (exists != null)
+            {
+                MessageBox.Show("Категория с указаным названием уже существует");
+                return;
+            }
+
+            IngredientCategoryName.Text = "";
+
+            AppData.IngredientCategory category = new AppData.IngredientCategory();
+            category.Name = categoryName;
+
+            Connection.IngredientCategory.Add(category);
+
+            Update();
+            UpdateCategoryBinding();
+        }
+
+        private void AddDishCategory(object sender, RoutedEventArgs e)
+        {
+            string categoryName = DishCategoryName.Text.Trim();
+            if (categoryName.Length == 0)
+            {
+                MessageBox.Show("Необхождимо ввести название категории");
+                return;
+            }
+
+            var exists = Connection.DishCategory.Where(c => c.Name == categoryName).FirstOrDefault();
+            if (exists != null)
+            {
+                MessageBox.Show("Категория с указаным названием уже существует");
+                return;
+            }
+
+            DishCategoryName.Text = "";
+
+            AppData.DishCategory category = new AppData.DishCategory();
+            category.Name = categoryName;
+
+            Connection.DishCategory.Add(category);
+
+            Update();
+            UpdateCategoryBinding();
         }
 
         // INGREDIENTS
