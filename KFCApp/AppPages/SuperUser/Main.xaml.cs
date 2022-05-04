@@ -75,7 +75,7 @@ namespace KFCApp.AppPages.SuperUser
             Lib.Placeholder.SetElement(DishName, "DishName", "Название блюда");
             Lib.Placeholder.SetElement(DishPrice, "DishPrice", "Цена");
 
-            // Чтобы Binding работал, нужно это написать
+            // Чтобы Binding работал, нужно это написать (Не надо)
             DataContext = this;
 
             UpdateEmployeeList();
