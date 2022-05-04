@@ -103,8 +103,8 @@ namespace KFCApp.AppPages.SuperUser
         private void UpdateIngredientList()
         {
             Ingredients = Connection.Ingredient.OrderBy(i => i.Name).ToList();
-            IngredientList.ItemsSource = Ingredients;
-            //IngredientList.GetBindingExpression(ListBox.ItemsSourceProperty)?.UpdateTarget();
+            IngredientList.GetBindingExpression(ListBox.ItemsSourceProperty)?.UpdateTarget();
+            DishIngredientList.GetBindingExpression(ListBox.ItemsSourceProperty)?.UpdateTarget();
         }
 
         private void RegisterUser(object sender, RoutedEventArgs e)
@@ -249,7 +249,7 @@ namespace KFCApp.AppPages.SuperUser
             }
         }
 
-        // CATEGORYIES
+        // CATEGORIES
 
         private void UpdateCategoryBinding()
         {
