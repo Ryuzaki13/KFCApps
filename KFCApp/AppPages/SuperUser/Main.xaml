@@ -214,7 +214,7 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button Content="Добавить"></Button>
+                        <Button Click="AddDish" Content="Добавить"></Button>
                     </StackPanel>
                 </Grid>
             </TabItem>

@@ -408,5 +408,41 @@ namespace KFCApp.AppPages.SuperUser
 
             IngredientsOfDishList.SelectedIndex = -1;
         }
+
+        private void ClearDish()
+        {
+            DishName.Text = "";
+            DishPrice.Text = "";
+            DishActive.IsChecked = true;
+            DishCategoryBox.SelectedItem = null;
+        }
+
+        private void AddDish(object sender, RoutedEventArgs e)
+        {
+            if (DishCategoryBox.SelectedIndex == -1)
+            {
+                MessageBox.Show("Необходимо выбрать категорию");
+                return;
+            }
+
+            string dishName = DishName.Text.Trim();
+            decimal price = 0;
+            if (decimal.TryParse(DishPrice.Text.Trim(), out price) == false)
+            {
+                MessageBox.Show("Некорректно введена цена");
+                return;
+            }
+
+            AppData.Dish dish = new AppData.Dish();
+            dish.Name = dishName;
+            dish.Price = price;
+            dish.DishCategory = DishCategoryBox.SelectedItem as AppData.DishCategory;
+            dish.Active = DishActive.IsChecked.Value;
+
+            Connection.Dish.Add(dish);
+
+            Update();
+            ClearDish();
+        }
     }
 }
