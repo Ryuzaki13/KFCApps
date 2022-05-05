@@ -15,6 +15,7 @@
         <EntityTypeShape EntityType="AppData.DishCategory" Width="1.5" PointX="0.75" PointY="1.375" />
         <AssociationConnector Association="AppData.FK_Dish_DishCategory" />
         <AssociationConnector Association="AppData.DishCompound" />
+        <EntityTypeShape EntityType="AppData.Blocking" Width="1.5" PointX="7.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

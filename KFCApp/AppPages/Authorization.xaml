@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
       TextElement.FontSize="16"
       xmlns:local="clr-namespace:KFCApp.AppPages"
@@ -21,10 +22,13 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <StackPanel Name="FormPanel" Grid.Column="1" Margin="0" Grid.Row="1">
+            <Label HorizontalContentAlignment="Center" Name="Captcha" FontSize="30" Content="" FontFamily="Global Monospace" Foreground="#DD00998B"></Label>
             <Label Content="Логин (номер телефона)"></Label>
             <TextBox Name="Phone"></TextBox>
             <Label Content="Пароль"></Label>
             <PasswordBox Name="Password"></PasswordBox>
+            <Label Content="Код проверки"></Label>
+            <TextBox Name="TextCaptcha"></TextBox>
             <Button Style="{DynamicResource MaterialDesignFlatButton}" Content="Войти" Margin="0, 20, 0, 0" Click="OnLogin"></Button>
         </StackPanel>
 

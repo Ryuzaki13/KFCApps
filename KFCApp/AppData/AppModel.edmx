@@ -5,6 +5,13 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="Хранилище AppData" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Blocking">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BlockTime" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="Dish">
           <Key>
             <PropertyRef Name="ID" />
@@ -123,6 +130,7 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="Хранилище AppDataContainer">
+          <EntitySet Name="Blocking" EntityType="Self.Blocking" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Dish" EntityType="Self.Dish" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DishCategory" EntityType="Self.DishCategory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DishCompound" EntityType="Self.DishCompound" Schema="dbo" store:Type="Tables" />
@@ -191,6 +199,7 @@
             <End Role="Dish" EntitySet="Dish" />
             <End Role="Ingredient" EntitySet="Ingredient" />
           </AssociationSet>
+          <EntitySet Name="Blocking" EntityType="AppData.Blocking" />
         </EntityContainer>
         <EntityType Name="Roles">
           <Key>
@@ -276,6 +285,13 @@
           <End Type="AppData.Dish" Role="Dish" Multiplicity="*" />
           <End Type="AppData.Ingredient" Role="Ingredient" Multiplicity="*" />
         </Association>
+        <EntityType Name="Blocking">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="BlockTime" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -345,6 +361,14 @@
               <ScalarProperty Name="ID" ColumnName="DishID" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="Blocking">
+            <EntityTypeMapping TypeName="AppData.Blocking">
+              <MappingFragment StoreEntitySet="Blocking">
+                <ScalarProperty Name="BlockTime" ColumnName="BlockTime" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
