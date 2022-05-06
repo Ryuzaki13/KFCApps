@@ -12,6 +12,24 @@
           <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="BlockTime" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="Phone" />
+          </Key>
+          <Property Name="Phone" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DateOfBirth" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ClientAddress">
+          <Key>
+            <PropertyRef Name="Client" />
+            <PropertyRef Name="Address" />
+          </Key>
+          <Property Name="Client" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Address" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
         <EntityType Name="Dish">
           <Key>
             <PropertyRef Name="ID" />
@@ -35,6 +53,12 @@
           </Key>
           <Property Name="DishID" Type="bigint" Nullable="false" />
           <Property Name="IngredientName" Type="varchar" MaxLength="200" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DishStatus">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="varchar" MaxLength="16" Nullable="false" />
         </EntityType>
         <EntityType Name="Employees">
           <Key>
@@ -63,12 +87,59 @@
           </Key>
           <Property Name="Name" Type="varchar" MaxLength="32" Nullable="false" />
         </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Client" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Address" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrderCompound">
+          <Key>
+            <PropertyRef Name="OrderID" />
+            <PropertyRef Name="DishID" />
+          </Key>
+          <Property Name="OrderID" Type="bigint" Nullable="false" />
+          <Property Name="DishID" Type="bigint" Nullable="false" />
+          <Property Name="Count" Type="int" Nullable="false" />
+          <Property Name="Price" Type="money" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="16" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrderStatus">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="varchar" MaxLength="16" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrderStatusHistory">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" />
+          <Property Name="OrderID" Type="bigint" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="16" Nullable="false" />
+          <Property Name="Time" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Employee" Type="nchar" MaxLength="10" Nullable="false" />
+        </EntityType>
         <EntityType Name="Roles">
           <Key>
             <PropertyRef Name="Name" />
           </Key>
           <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
+        <Association Name="FK_ClientAddress_Client">
+          <End Role="Client" Type="Self.Client" Multiplicity="1" />
+          <End Role="ClientAddress" Type="Self.ClientAddress" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="Phone" />
+            </Principal>
+            <Dependent Role="ClientAddress">
+              <PropertyRef Name="Client" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Dish_DishCategory">
           <End Role="DishCategory" Type="Self.DishCategory" Multiplicity="1" />
           <End Role="Dish" Type="Self.Dish" Multiplicity="*" />
@@ -129,15 +200,113 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Order_Client">
+          <End Role="Client" Type="Self.Client" Multiplicity="1" />
+          <End Role="Order" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="Phone" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="Client" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <!--Ошибки, обнаруженные при создании:
+предупреждение 6035: В связи "FK_Order_ClientAddress" имеются столбцы, которые не являются частью ключа таблицы на первичной стороне связи. Связь исключена.
+        <Association Name="FK_Order_ClientAddress" />-->
+        <Association Name="FK_OrderCompound_Dish">
+          <End Role="Dish" Type="Self.Dish" Multiplicity="1" />
+          <End Role="OrderCompound" Type="Self.OrderCompound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dish">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="OrderCompound">
+              <PropertyRef Name="DishID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderCompound_DishStatus">
+          <End Role="DishStatus" Type="Self.DishStatus" Multiplicity="1" />
+          <End Role="OrderCompound" Type="Self.OrderCompound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DishStatus">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="OrderCompound">
+              <PropertyRef Name="Status" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderCompound_Order">
+          <End Role="Order" Type="Self.Order" Multiplicity="1" />
+          <End Role="OrderCompound" Type="Self.OrderCompound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="OrderCompound">
+              <PropertyRef Name="OrderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistory_Employees">
+          <End Role="Employees" Type="Self.Employees" Multiplicity="1" />
+          <End Role="OrderStatusHistory" Type="Self.OrderStatusHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employees">
+              <PropertyRef Name="Phone" />
+            </Principal>
+            <Dependent Role="OrderStatusHistory">
+              <PropertyRef Name="Employee" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistory_Order">
+          <End Role="Order" Type="Self.Order" Multiplicity="1" />
+          <End Role="OrderStatusHistory" Type="Self.OrderStatusHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="OrderStatusHistory">
+              <PropertyRef Name="OrderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistory_OrderStatus">
+          <End Role="OrderStatus" Type="Self.OrderStatus" Multiplicity="1" />
+          <End Role="OrderStatusHistory" Type="Self.OrderStatusHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderStatus">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="OrderStatusHistory">
+              <PropertyRef Name="Status" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Хранилище AppDataContainer">
           <EntitySet Name="Blocking" EntityType="Self.Blocking" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Client" EntityType="Self.Client" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ClientAddress" EntityType="Self.ClientAddress" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Dish" EntityType="Self.Dish" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DishCategory" EntityType="Self.DishCategory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DishCompound" EntityType="Self.DishCompound" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DishStatus" EntityType="Self.DishStatus" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employees" EntityType="Self.Employees" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ingredient" EntityType="Self.Ingredient" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IngredientCategory" EntityType="Self.IngredientCategory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderCompound" EntityType="Self.OrderCompound" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderStatus" EntityType="Self.OrderStatus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderStatusHistory" EntityType="Self.OrderStatusHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_ClientAddress_Client" Association="Self.FK_ClientAddress_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="ClientAddress" EntitySet="ClientAddress" />
+          </AssociationSet>
           <AssociationSet Name="FK_Dish_DishCategory" Association="Self.FK_Dish_DishCategory">
             <End Role="DishCategory" EntitySet="DishCategory" />
             <End Role="Dish" EntitySet="Dish" />
@@ -158,6 +327,34 @@
             <End Role="IngredientCategory" EntitySet="IngredientCategory" />
             <End Role="Ingredient" EntitySet="Ingredient" />
           </AssociationSet>
+          <AssociationSet Name="FK_Order_Client" Association="Self.FK_Order_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderCompound_Dish" Association="Self.FK_OrderCompound_Dish">
+            <End Role="Dish" EntitySet="Dish" />
+            <End Role="OrderCompound" EntitySet="OrderCompound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderCompound_DishStatus" Association="Self.FK_OrderCompound_DishStatus">
+            <End Role="DishStatus" EntitySet="DishStatus" />
+            <End Role="OrderCompound" EntitySet="OrderCompound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderCompound_Order" Association="Self.FK_OrderCompound_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="OrderCompound" EntitySet="OrderCompound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistory_Employees" Association="Self.FK_OrderStatusHistory_Employees">
+            <End Role="Employees" EntitySet="Employees" />
+            <End Role="OrderStatusHistory" EntitySet="OrderStatusHistory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistory_Order" Association="Self.FK_OrderStatusHistory_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="OrderStatusHistory" EntitySet="OrderStatusHistory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistory_OrderStatus" Association="Self.FK_OrderStatusHistory_OrderStatus">
+            <End Role="OrderStatus" EntitySet="OrderStatus" />
+            <End Role="OrderStatusHistory" EntitySet="OrderStatusHistory" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -175,6 +372,7 @@
           <Property Name="Patronymic" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Roles" Relationship="AppData.FK_Employees_Roles" FromRole="Employees" ToRole="Roles" />
           <Property Name="Active" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="OrderStatusHistory" Relationship="AppData.FK_OrderStatusHistory_Employees" FromRole="Employees" ToRole="OrderStatusHistory" />
         </EntityType>
         <EntityContainer Name="AppConnector" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Employees" EntityType="Self.Employees" />
@@ -200,6 +398,45 @@
             <End Role="Ingredient" EntitySet="Ingredient" />
           </AssociationSet>
           <EntitySet Name="Blocking" EntityType="AppData.Blocking" />
+          <EntitySet Name="Client" EntityType="AppData.Client" />
+          <EntitySet Name="ClientAddress" EntityType="AppData.ClientAddress" />
+          <EntitySet Name="DishStatus" EntityType="AppData.DishStatus" />
+          <EntitySet Name="Order" EntityType="AppData.Order" />
+          <EntitySet Name="OrderCompound" EntityType="AppData.OrderCompound" />
+          <EntitySet Name="OrderStatus" EntityType="AppData.OrderStatus" />
+          <EntitySet Name="OrderStatusHistory" EntityType="AppData.OrderStatusHistory" />
+          <AssociationSet Name="FK_ClientAddress_Client" Association="AppData.FK_ClientAddress_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="ClientAddress" EntitySet="ClientAddress" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Order_Client" Association="AppData.FK_Order_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderCompound_Dish" Association="AppData.FK_OrderCompound_Dish">
+            <End Role="Dish" EntitySet="Dish" />
+            <End Role="OrderCompound" EntitySet="OrderCompound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderCompound_DishStatus" Association="AppData.FK_OrderCompound_DishStatus">
+            <End Role="DishStatus" EntitySet="DishStatus" />
+            <End Role="OrderCompound" EntitySet="OrderCompound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistory_Employees" Association="AppData.FK_OrderStatusHistory_Employees">
+            <End Role="Employees" EntitySet="Employees" />
+            <End Role="OrderStatusHistory" EntitySet="OrderStatusHistory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderCompound_Order" Association="AppData.FK_OrderCompound_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="OrderCompound" EntitySet="OrderCompound" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistory_Order" Association="AppData.FK_OrderStatusHistory_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="OrderStatusHistory" EntitySet="OrderStatusHistory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistory_OrderStatus" Association="AppData.FK_OrderStatusHistory_OrderStatus">
+            <End Role="OrderStatus" EntitySet="OrderStatus" />
+            <End Role="OrderStatusHistory" EntitySet="OrderStatusHistory" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Roles">
           <Key>
@@ -261,6 +498,7 @@
           <Property Name="Active" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="DishCategory" Relationship="AppData.FK_Dish_DishCategory" FromRole="Dish" ToRole="DishCategory" />
           <NavigationProperty Name="Ingredient" Relationship="AppData.DishCompound" FromRole="Dish" ToRole="Ingredient" />
+          <NavigationProperty Name="OrderCompound" Relationship="AppData.FK_OrderCompound_Dish" FromRole="Dish" ToRole="OrderCompound" />
         </EntityType>
         <EntityType Name="DishCategory">
           <Key>
@@ -292,6 +530,175 @@
           <Property Name="ID" Type="Int64" Nullable="false" />
           <Property Name="BlockTime" Type="DateTime" Nullable="false" Precision="7" />
         </EntityType>
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="Phone" />
+          </Key>
+          <Property Name="Phone" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DateOfBirth" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="ClientAddress" Relationship="AppData.FK_ClientAddress_Client" FromRole="Client" ToRole="ClientAddress" />
+          <NavigationProperty Name="Order" Relationship="AppData.FK_Order_Client" FromRole="Client" ToRole="Order" />
+        </EntityType>
+        <EntityType Name="ClientAddress">
+          <Key>
+            <PropertyRef Name="Client" />
+            <PropertyRef Name="Address" />
+          </Key>
+          <Property Name="Client" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Address" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Client1" Relationship="AppData.FK_ClientAddress_Client" FromRole="ClientAddress" ToRole="Client" />
+        </EntityType>
+        <EntityType Name="DishStatus">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="OrderCompound" Relationship="AppData.FK_OrderCompound_DishStatus" FromRole="DishStatus" ToRole="OrderCompound" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Client" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Address" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="Client1" Relationship="AppData.FK_Order_Client" FromRole="Order" ToRole="Client" />
+          <NavigationProperty Name="OrderCompound" Relationship="AppData.FK_OrderCompound_Order" FromRole="Order" ToRole="OrderCompound" />
+          <NavigationProperty Name="OrderStatusHistory" Relationship="AppData.FK_OrderStatusHistory_Order" FromRole="Order" ToRole="OrderStatusHistory" />
+        </EntityType>
+        <EntityType Name="OrderCompound">
+          <Key>
+            <PropertyRef Name="OrderID" />
+            <PropertyRef Name="DishID" />
+          </Key>
+          <Property Name="OrderID" Type="Int64" Nullable="false" />
+          <Property Name="DishID" Type="Int64" Nullable="false" />
+          <Property Name="Count" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Dish" Relationship="AppData.FK_OrderCompound_Dish" FromRole="OrderCompound" ToRole="Dish" />
+          <NavigationProperty Name="DishStatus" Relationship="AppData.FK_OrderCompound_DishStatus" FromRole="OrderCompound" ToRole="DishStatus" />
+          <NavigationProperty Name="Order" Relationship="AppData.FK_OrderCompound_Order" FromRole="OrderCompound" ToRole="Order" />
+        </EntityType>
+        <EntityType Name="OrderStatus">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="OrderStatusHistory" Relationship="AppData.FK_OrderStatusHistory_OrderStatus" FromRole="OrderStatus" ToRole="OrderStatusHistory" />
+        </EntityType>
+        <EntityType Name="OrderStatusHistory">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="OrderID" Type="Int64" Nullable="false" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="Time" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Employee" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Employees" Relationship="AppData.FK_OrderStatusHistory_Employees" FromRole="OrderStatusHistory" ToRole="Employees" />
+          <NavigationProperty Name="Order" Relationship="AppData.FK_OrderStatusHistory_Order" FromRole="OrderStatusHistory" ToRole="Order" />
+          <NavigationProperty Name="OrderStatus" Relationship="AppData.FK_OrderStatusHistory_OrderStatus" FromRole="OrderStatusHistory" ToRole="OrderStatus" />
+        </EntityType>
+        <Association Name="FK_ClientAddress_Client">
+          <End Type="AppData.Client" Role="Client" Multiplicity="1" />
+          <End Type="AppData.ClientAddress" Role="ClientAddress" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="Phone" />
+            </Principal>
+            <Dependent Role="ClientAddress">
+              <PropertyRef Name="Client" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Order_Client">
+          <End Type="AppData.Client" Role="Client" Multiplicity="1" />
+          <End Type="AppData.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="Phone" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="Client" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderCompound_Dish">
+          <End Type="AppData.Dish" Role="Dish" Multiplicity="1" />
+          <End Type="AppData.OrderCompound" Role="OrderCompound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dish">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="OrderCompound">
+              <PropertyRef Name="DishID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderCompound_DishStatus">
+          <End Type="AppData.DishStatus" Role="DishStatus" Multiplicity="1" />
+          <End Type="AppData.OrderCompound" Role="OrderCompound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DishStatus">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="OrderCompound">
+              <PropertyRef Name="Status" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistory_Employees">
+          <End Type="AppData.Employees" Role="Employees" Multiplicity="1" />
+          <End Type="AppData.OrderStatusHistory" Role="OrderStatusHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employees">
+              <PropertyRef Name="Phone" />
+            </Principal>
+            <Dependent Role="OrderStatusHistory">
+              <PropertyRef Name="Employee" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderCompound_Order">
+          <End Type="AppData.Order" Role="Order" Multiplicity="1" />
+          <End Type="AppData.OrderCompound" Role="OrderCompound" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="OrderCompound">
+              <PropertyRef Name="OrderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistory_Order">
+          <End Type="AppData.Order" Role="Order" Multiplicity="1" />
+          <End Type="AppData.OrderStatusHistory" Role="OrderStatusHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="OrderStatusHistory">
+              <PropertyRef Name="OrderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistory_OrderStatus">
+          <End Type="AppData.OrderStatus" Role="OrderStatus" Multiplicity="1" />
+          <End Type="AppData.OrderStatusHistory" Role="OrderStatusHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderStatus">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="OrderStatusHistory">
+              <PropertyRef Name="Status" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -365,6 +772,70 @@
             <EntityTypeMapping TypeName="AppData.Blocking">
               <MappingFragment StoreEntitySet="Blocking">
                 <ScalarProperty Name="BlockTime" ColumnName="BlockTime" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Client">
+            <EntityTypeMapping TypeName="AppData.Client">
+              <MappingFragment StoreEntitySet="Client">
+                <ScalarProperty Name="DateOfBirth" ColumnName="DateOfBirth" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ClientAddress">
+            <EntityTypeMapping TypeName="AppData.ClientAddress">
+              <MappingFragment StoreEntitySet="ClientAddress">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Client" ColumnName="Client" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DishStatus">
+            <EntityTypeMapping TypeName="AppData.DishStatus">
+              <MappingFragment StoreEntitySet="DishStatus">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Order">
+            <EntityTypeMapping TypeName="AppData.Order">
+              <MappingFragment StoreEntitySet="Order">
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Client" ColumnName="Client" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderCompound">
+            <EntityTypeMapping TypeName="AppData.OrderCompound">
+              <MappingFragment StoreEntitySet="OrderCompound">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Count" ColumnName="Count" />
+                <ScalarProperty Name="DishID" ColumnName="DishID" />
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderStatus">
+            <EntityTypeMapping TypeName="AppData.OrderStatus">
+              <MappingFragment StoreEntitySet="OrderStatus">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderStatusHistory">
+            <EntityTypeMapping TypeName="AppData.OrderStatusHistory">
+              <MappingFragment StoreEntitySet="OrderStatusHistory">
+                <ScalarProperty Name="Employee" ColumnName="Employee" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

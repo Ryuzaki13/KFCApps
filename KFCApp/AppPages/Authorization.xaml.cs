@@ -51,18 +51,18 @@ namespace KFCApp.AppPages
 
         private void WriteBlocking()
         {
-            connection.Blocking.Add(new AppData.Blocking() { BlockTime = DateTime.Now.AddMinutes(1) });
+            connection.Blocking.Add(
+                new AppData.Blocking() {
+                    BlockTime = DateTime.Now.AddMinutes(1) 
+                });
             connection.SaveChanges();
         }
-
         private bool CheckBlocking()
         {
             blocking = Lib.Connector.GetModel().Blocking.OrderByDescending(b => b.BlockTime).FirstOrDefault();
             if (blocking == null) return false;
-
             return blocking.BlockTime > DateTime.Now;
         }
-
         private void OnLogin(object sender, RoutedEventArgs e)
         {
             // Проверить количество неудачных попыток входа

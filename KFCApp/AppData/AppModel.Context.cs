@@ -32,5 +32,12 @@ namespace KFCApp.AppData
         public virtual DbSet<Dish> Dish { get; set; }
         public virtual DbSet<DishCategory> DishCategory { get; set; }
         public virtual DbSet<Blocking> Blocking { get; set; }
+        public virtual DbSet<Client> Client { get; set; }
+        public virtual DbSet<ClientAddress> ClientAddress { get; set; }
+        public virtual DbSet<DishStatus> DishStatus { get; set; }
+        public virtual DbSet<Order> Order { get; set; }
+        public virtual DbSet<OrderCompound> OrderCompound { get; set; }
+        public virtual DbSet<OrderStatus> OrderStatus { get; set; }
+        public virtual DbSet<OrderStatusHistory> OrderStatusHistory { get; set; }
     }
 }

@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:KFCApp.AppPages.SuperUser"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-      TextElement.FontSize="16"
+      TextElement.FontSize="14"
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="600"
       Title="Main">

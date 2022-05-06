@@ -14,6 +14,12 @@ namespace KFCApp.AppData
     
     public partial class Employees
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Employees()
+        {
+            this.OrderStatusHistory = new HashSet<OrderStatusHistory>();
+        }
+    
         public string Phone { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
@@ -23,5 +29,7 @@ namespace KFCApp.AppData
         public bool Active { get; set; }
     
         public virtual Roles Roles { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrderStatusHistory> OrderStatusHistory { get; set; }
     }
 }

@@ -12,25 +12,23 @@ namespace KFCApp.AppData
     using System;
     using System.Collections.Generic;
     
-    public partial class Dish
+    public partial class Client
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Dish()
+        public Client()
         {
-            this.Ingredient = new HashSet<Ingredient>();
-            this.OrderCompound = new HashSet<OrderCompound>();
+            this.ClientAddress = new HashSet<ClientAddress>();
+            this.Order = new HashSet<Order>();
         }
     
-        public long ID { get; set; }
+        public string Phone { get; set; }
         public string Name { get; set; }
-        public decimal Price { get; set; }
-        public string Category { get; set; }
-        public bool Active { get; set; }
+        public string Email { get; set; }
+        public System.DateTime DateOfBirth { get; set; }
     
-        public virtual DishCategory DishCategory { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Ingredient> Ingredient { get; set; }
+        public virtual ICollection<ClientAddress> ClientAddress { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderCompound> OrderCompound { get; set; }
+        public virtual ICollection<Order> Order { get; set; }
     }
 }
