@@ -19,17 +19,20 @@ namespace KFCApp.AppPages
 {
     public partial class Authorization : Page
     {
+        private AppData.AppConnector connection;
         private string code = "";
-        private double blockTime = 0;
-        private int blockInterval = 60000;
+
+        private AppData.Blocking blocking;
         private int failCounter = 0;
-        private const string filename = "data.lock";
+
+        private const string chars = "QWERTYUIOPASDFGHJKLZXCVBNM0123456789@#$%&";
 
         public Authorization()
         {
             InitializeComponent();
 
-            string chars = "QWERTYUIOPASDFGHJKLZXCVBNM0123456789@#$%&";
+            connection = Lib.Connector.GetModel();
+                        
             Random random = new Random((int)DateTime.Now.Ticks);
 
             for (int i = 0; i < 6; i++)
@@ -48,82 +51,40 @@ namespace KFCApp.AppPages
 
         private void WriteBlocking()
         {
-            try
-            {
-                //var file = File.Open(filename, FileMode.OpenOrCreate);
-                //BinaryWriter binaryWriter = new BinaryWriter(file);
-
-                Lib.Connector.GetModel().Blocking.Add(new AppData.Blocking() { BlockTime = DateTime.Now.AddMinutes(1) });
-                Lib.Connector.GetModel().SaveChanges();
-
-                //binaryWriter.Write(blockTime);
-                //file.Close();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
+            connection.Blocking.Add(new AppData.Blocking() { BlockTime = DateTime.Now.AddMinutes(1) });
+            connection.SaveChanges();
         }
 
         private bool CheckBlocking()
         {
-            if (File.Exists(filename) == true)
-            {
-                try
-                {
-                    //var file = File.Open(filename, FileMode.Open);
-                    //BinaryReader binaryReader = new BinaryReader(file);
-                    //blockTime = binaryReader.ReadDouble();
-                    //file.Close();
+            blocking = Lib.Connector.GetModel().Blocking.OrderByDescending(b => b.BlockTime).FirstOrDefault();
+            if (blocking == null) return false;
 
-                    var lastBlockTime = Lib.Connector.GetModel().Blocking.OrderByDescending(b => b.BlockTime).FirstOrDefault();
-                    if (lastBlockTime == null)
-                    {
-                        return false;
-                    }
-
-                    blockTime = new TimeSpan(lastBlockTime.BlockTime.Ticks).TotalMilliseconds;
-
-                    TimeSpan timeSpan = new TimeSpan(DateTime.Now.Ticks);
-
-                    if (blockTime > timeSpan.TotalMilliseconds)
-                    {
-                        return true;
-                    }
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                    return true;
-                }
-            }
-            else
-            {
-                WriteBlocking();
-                return true;
-            }
-
-            return false;
+            return blocking.BlockTime > DateTime.Now;
         }
 
         private void OnLogin(object sender, RoutedEventArgs e)
         {
+            // Проверить количество неудачных попыток входа
             if (failCounter >= 3)
             {
+                // Если лимит превышен, то записать в базу время разблокировки
                 WriteBlocking();
                 MessageBox.Show("Вход заблокирован на 1 минуту");
                 failCounter = 0;
                 return;
             }
 
+            // Проверить, было ли приложение заблокировано
             if (CheckBlocking() == true)
             {
-                TimeSpan timeSpan = new TimeSpan(DateTime.Now.Ticks);
-                int time = (int)((blockTime - timeSpan.TotalMilliseconds) / 1000);
+                // Вычислить сколько секунд осталось до разблокировки
+                int time = (int)(blocking.BlockTime - DateTime.Now).TotalSeconds;
                 MessageBox.Show("Вход заблокирован ещё " + time + " секунд");
                 return;
             }
 
+            // Проверить введенный код проверки
             if (TextCaptcha.Text != code)
             {
                 MessageBox.Show("Неверный код проверки");
